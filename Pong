@@ -1,0 +1,139 @@
+import turtle
+
+#Window settings
+wn = turtle.Screen()  #creating the screen, im naming it wn
+wn.title("Pong")
+wn.bgcolor("black")
+wn.setup(width=800, height=600)
+wn.tracer(0)
+
+# Paddle A
+Paddle_A = turtle.Turtle()  #creating the object for left side paddle
+Paddle_A.speed(0)
+Paddle_A.shape("square")
+Paddle_A.color("blue")
+Paddle_A.shapesize(stretch_wid=8, stretch_len=1)
+Paddle_A.penup()
+Paddle_A.goto(-350, 0)
+
+# Paddle B
+Paddle_B = turtle.Turtle()  #creating the object for right side paddle
+Paddle_B.speed(0)
+Paddle_B.shape("square")
+Paddle_B.color("red")
+Paddle_B.shapesize(stretch_wid=8, stretch_len=1)
+Paddle_B.penup()
+Paddle_B.goto(350, 0)
+# Ball
+ball = turtle.Turtle()  #creating the object for ball
+ball.speed(0)
+ball.shape("circle")
+ball.color("white")
+ball.penup()
+ball.goto(0, 0)
+ball.dx = 0.9
+ball.dy = -0.9
+
+#Score variables
+Score_A = 0
+Score_B = 0
+
+#Pen (for scoring)
+pen = turtle.Turtle()
+pen.speed(0)
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 260)
+pen.write("0     0", align="center",
+          font=("Times New Roman", 24,
+                "normal"))  #writes out default score (0 to 0)
+
+
+#Paddle Move Function
+def Paddle_A_up():
+  y = Paddle_A.ycor()
+  if y < 200:
+    y += 20
+    Paddle_A.sety(y)
+
+
+def Paddle_A_down():
+  y = Paddle_A.ycor()
+  if y > -200:
+    y -= 20
+    Paddle_A.sety(y)
+
+
+def Paddle_B_up():
+  y = Paddle_B.ycor()
+  if y < 200:
+    y += 20
+    Paddle_B.sety(y)
+
+
+def Paddle_B_down():
+  y = Paddle_B.ycor()
+  if y > -200:
+    y -= 20
+    Paddle_B.sety(y)
+
+
+#Calling functions (or controls for the game)
+wn.listen()
+wn.onkeypress(Paddle_A_up, "w")
+wn.onkeypress(Paddle_A_down, "s")
+wn.onkeypress(Paddle_B_up, "Up")
+wn.onkeypress(Paddle_B_down, "Down")
+
+#Main game (what is happening while the game is playing)
+while True:
+  wn.update()
+
+  #move ball
+  ball.setx(ball.xcor() + ball.dx)
+  ball.sety(ball.ycor() + ball.dy)
+
+  #roof
+  if ball.ycor() > 290:
+    ball.sety(290)
+    ball.dy *= -1
+
+  #floor
+  if ball.ycor() < -290:
+    ball.sety(-290)
+    ball.dy *= -1
+
+  #sides
+  if ball.xcor() > 390:
+    ball.goto(0, 0)
+    ball.dx *= -1
+    Score_A += 1
+    pen.clear()  #clear removes the previous text (0 at start)
+    pen.write("{}     {}".format(Score_A, Score_B),
+              align="center",
+              font=("Times New Roman", 24, "normal"))  #writes in new score
+
+  if ball.xcor() < -390:
+    ball.goto(0, 0)
+    ball.dx *= -1
+    Score_B += 1
+    pen.clear()
+    pen.write("{}     {}".format(Score_A, Score_B),
+              align="center",
+              font=("Times New Roman", 24, "normal"))
+
+  #paddle/ball collisions
+  #right side
+  if (ball.xcor() > 340
+      and ball.xcor() < 350) and (ball.ycor() < Paddle_B.ycor() + 100
+                                  and ball.ycor() > Paddle_B.ycor() - 100):
+    ball.setx(340)
+    ball.dx *= -1
+
+  #left side
+  if (ball.xcor() < -340
+      and ball.xcor() > -350) and (ball.ycor() < Paddle_A.ycor() + 100
+                                   and ball.ycor() > Paddle_A.ycor() - 100):
+    ball.setx(-340)
+    ball.dx *= -1
